@@ -54,27 +54,23 @@ def generate_discipline():
     return Discipline(type, name, teacher, students, day, time, room)
 
 
-def overlapping_teachers_penalty(discs):
-    predicate = lambda i, j: discs[i].teacher == discs[j].teacher \
-                             and discs[i].day == discs[j].day \
-                             and discs[i].time == discs[j].time
+def overlapping_rooms_penalty(discs):
+    return overlapping_penalty(discs, lambda i, j: discs[i].room == discs[j].room, 5)
 
-    return overlapping_penalty(discs, predicate, 10)
+
+def overlapping_teachers_penalty(discs):
+    return overlapping_penalty(discs, lambda i, j: discs[i].teacher == discs[j].teacher, 10)
 
 
 def overlapping_students_penalty(discs):
-    predicate = lambda i, j: discs[i].day == discs[j].day \
-                             and discs[i].time == discs[j].time \
-                             and list(set(discs[i].students) & set(discs[j].students))
-
-    return overlapping_penalty(discs, predicate, 3)
+    return overlapping_penalty(discs, lambda i, j: list(set(discs[i].students) & set(discs[j].students)), 3)
 
 
 def overlapping_penalty(discs, predicate, penalty_value):
     penalty = 0
     for i in range(0, len(discs)):
         for j in range(i + 1, len(discs)):
-            if predicate(i, j):
+            if predicate(i, j) and discs[i].day == discs[j].day and discs[i].time == discs[j].time:
                 penalty -= penalty_value  # overlapping disciplines for teachers are unacceptable
 
     return penalty
@@ -85,7 +81,7 @@ def score(schedule):
                              if disc.room.capacity < len(disc.students)])
 
     return capacity_penalty + overlapping_teachers_penalty(schedule.disciplines) + \
-           overlapping_students_penalty(schedule.disciplines)
+           overlapping_students_penalty(schedule.disciplines) + overlapping_rooms_penalty(schedule.disciplines)
 
 
 if __name__ == '__main__':
