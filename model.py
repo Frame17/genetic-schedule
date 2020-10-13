@@ -30,4 +30,4 @@ class Discipline:
         self.room = room
 
     def __str__(self):
-        return f'{self.day} | {self.time} | {self.room} | {self.name} | {self.type} | {self.teacher} | {self.students}'
+        return f'{self.day} | {self.time} | {self.room} | {self.name} | {self.type} | {self.teacher} | {len(self.students)}'
