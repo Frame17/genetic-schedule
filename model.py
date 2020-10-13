@@ -1,3 +1,6 @@
+from enum import IntEnum
+
+
 class Room:
     def __init__(self, number, capacity):
         self.number = number
@@ -30,4 +33,12 @@ class Discipline:
         self.room = room
 
     def __str__(self):
-        return f'{self.day} | {self.time} | {self.room} | {self.name} | {self.type} | {self.teacher} | {len(self.students)}'
+        return f'{self.day.name} | {self.time} | {self.room} | {self.name} | {self.type} | {self.teacher} | {len(self.students)}'
+
+
+class Day(IntEnum):
+    MON = 1
+    TUE = 2
+    WED = 3
+    THU = 4
+    FRI = 5

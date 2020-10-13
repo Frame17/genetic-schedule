@@ -7,7 +7,7 @@ MAX_ITERATIONS = 100
 
 DISCIPLINES = ["Intro to Computer Science", "Databases", "Linear Algebra", "Calculus", "Algorithms"]
 TEACHERS = ["John Doe", "Ed Sheeran", "LeBron James", "Donald Trump", "Petro Poroshenko"]
-STUDENTS = [names.get_full_name() for _ in list(range(120))]
+STUDENTS = list(dict.fromkeys([names.get_full_name() for _ in list(range(120))]))
 ROOMS = [Room(303, 50), Room(113, 30), Room(404, 50), Room(119, 30), Room(313, 60)]
 
 
@@ -48,7 +48,7 @@ def generate_discipline():
     teacher = random.choice(TEACHERS)
     name = random.choice(DISCIPLINES)
     students = random.sample(STUDENTS, random.randrange(30, 70))
-    day = random.choice(["mon", "tue", "wed", "thu", "fri"])
+    day = random.choice([Day.MON, Day.TUE, Day.WED, Day.THU, Day.FRI])
     time = random.choice([8.30, 10, 11.40, 13.30, 15, 16.30, 18])
     room = random.choice(ROOMS)
     return Discipline(type, name, teacher, students, day, time, room)
@@ -94,6 +94,7 @@ if __name__ == '__main__':
         population_rank = sorted(scored_population, key=lambda schedule: schedule[1], reverse=True)
         population = new_gen(population_rank)
 
+    population_rank[0][0].disciplines.sort(key=lambda discipline: (discipline.day, discipline.time))
     print(f'Iterations: {iterations}')
     print(population_rank[0][0])
     print(f'score: {population_rank[0][1]}')
