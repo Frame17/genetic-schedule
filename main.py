@@ -44,12 +44,6 @@ def generate_schedule():
     return Schedule([generate_discipline() for _ in range(0, 10)])
 
 
-def pick_room(rooms, students_number):
-    # filter out rooms that are too small for this number of students
-    rooms = list(filter(lambda room: room.capacity >= students_number, rooms))
-    return random.choice(rooms)
-
-
 def generate_discipline():
     lesson_type = random.choice(["lecture", "practice"])
     teacher = random.choice(TEACHERS)
@@ -57,7 +51,7 @@ def generate_discipline():
     students = random.sample(STUDENTS, random.randrange(10, 40))
     day = random.choice([Day.MON, Day.TUE, Day.WED, Day.THU, Day.FRI])
     time = random.choice([Time.FIRST, Time.SECOND, Time.THIRD, Time.FOURTH, Time.FIFTH, Time.SIXTH, Time.SEVENTH])
-    room = pick_room(ROOMS, len(students))
+    room = random.choice(ROOMS)
 
     return Discipline(lesson_type, name, teacher, students, day, time, room)
 
