@@ -4,11 +4,12 @@ import numpy as np
 from model import *
 
 MAX_ITERATIONS = 100
+MIN_LECTURE_ROOM_CAPACITY = 15
 
-DISCIPLINES = ["Intro to Computer Science", "Databases", "Linear Algebra", "Calculus", "Algorithms"]
+DISCIPLINES = ["Intro to Computer Science", "Databases", "Linear Algebra", "Calculus", "Algorithms", "System Theory"]
 TEACHERS = ["John Doe", "Ed Sheeran", "LeBron James", "Donald Trump", "Petro Poroshenko"]
 STUDENTS = list(dict.fromkeys([names.get_full_name() for _ in list(range(120))]))
-ROOMS = [Room(303, 50), Room(113, 30), Room(404, 50), Room(119, 30), Room(313, 60)]
+ROOMS = [Room(110, 10), Room(303, 50), Room(113, 30), Room(404, 50), Room(119, 30), Room(313, 60)]
 
 
 def generate_population():
@@ -43,15 +44,24 @@ def generate_schedule():
     return Schedule([generate_discipline() for _ in range(0, 10)])
 
 
+def pick_room(lesson_type, rooms, students_number):
+    # filter out rooms that are too small for this number of students
+    if lesson_type == "lecture":
+        rooms = list(filter(lambda room: room.capacity >= students_number, rooms))
+
+    return random.choice(rooms)
+
+
 def generate_discipline():
-    type = random.choice(["lecture", "practice"])
+    lesson_type = random.choice(["lecture", "practice"])
     teacher = random.choice(TEACHERS)
     name = random.choice(DISCIPLINES)
-    students = random.sample(STUDENTS, random.randrange(30, 70))
+    students = random.sample(STUDENTS, random.randrange(10, 40))
     day = random.choice([Day.MON, Day.TUE, Day.WED, Day.THU, Day.FRI])
-    time = random.choice([8.30, 10, 11.40, 13.30, 15, 16.30, 18])
-    room = random.choice(ROOMS)
-    return Discipline(type, name, teacher, students, day, time, room)
+    time = random.choice([Time.FIRST, Time.SECOND, Time.THIRD, Time.FOURTH, Time.FIFTH, Time.SIXTH, Time.SEVENTH])
+    room = pick_room(lesson_type, ROOMS, len(students))
+
+    return Discipline(lesson_type, name, teacher, students, day, time, room)
 
 
 def overlapping_rooms_penalty(discs):
