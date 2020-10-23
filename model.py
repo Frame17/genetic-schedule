@@ -1,5 +1,6 @@
 from enum import IntEnum, Enum
 
+
 class Room:
     def __init__(self, number, capacity):
         self.number = number
