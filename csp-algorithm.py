@@ -19,27 +19,26 @@ def generate_discipline():
 
 
 def run_schedule(heuristics):
-    X = [(day, time, room, lesson_type) for day in list(map(lambda x: x, Day)) for time in list(map(lambda x: x, Time))
-         for room in ROOMS for lesson_type in LESSON_TYPES]
+    X = [(day, time, room) for day in list(map(lambda x: x, Day)) for time in list(map(lambda x: x, Time))
+         for room in ROOMS]
 
     disciplines = [generate_discipline() for _ in range(0, 10)]
     for i in range(0, len(disciplines)):
-        spot = heuristics(X, disciplines[:i])
+        spot = heuristics(X, disciplines[:i], disciplines[i])
         disciplines[i].day = spot[0]
         disciplines[i].time = spot[1]
         disciplines[i].room = spot[2]
-        disciplines[i].type = spot[3]
     return Schedule(disciplines)
 
 
-def on_spot(discipline, spot):
-    return (discipline.day == spot[0] and discipline.time == spot[1] and discipline.room == spot[2]) \
-           or (discipline.day == spot[0] and discipline.time == spot[1] and discipline.room == spot[2]
-               and discipline.type != spot[3])
+def on_spot(discipline, spot, disc):
+    return discipline.day == spot[0] and discipline.time == spot[1] and discipline.room == spot[2] or \
+           discipline.day == spot[0] and discipline.time == spot[1] and disc.teacher == discipline.teacher or \
+           discipline.day == spot[0] and discipline.time == spot[1] and discipline.type != disc.type
 
 
-def mrv(X, disciplines):
-    return sorted(X, key=lambda spot: len(list(filter(lambda disc: on_spot(disc, spot), disciplines))))[0]
+def mrv(X, disciplines, discipline):
+    return sorted(X, key=lambda spot: len(list(filter(lambda disc: on_spot(disc, spot, discipline), disciplines))))[0]
 
 
 if __name__ == '__main__':
