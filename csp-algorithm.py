@@ -89,4 +89,4 @@ def forward_checking():
 
 if __name__ == '__main__':
     print(run_schedule(mrv))
-    # print(forward_checking())
+    print(forward_checking())

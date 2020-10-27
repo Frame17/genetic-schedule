@@ -12,7 +12,7 @@ class Room:
 
 class Schedule:
     def __init__(self, disciplines):
-        self.disciplines = disciplines
+        self.disciplines = sorted(disciplines)
 
     def __str__(self):
         res = ""
@@ -34,6 +34,11 @@ class Discipline:
 
     def __str__(self):
         return f'{self.day.name} | {self.time.value} | {self.room} | {self.name} | {self.type} | {self.teacher} | {len(self.students)}'
+
+    def __lt__(self, other):
+        if self.day.name == other.day.name:
+            return self.time.value < other.time.value
+        return self.day.value < other.day.value
 
 
 class Day(IntEnum):
