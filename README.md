@@ -1,6 +1,6 @@
 # Schedule Generation
 
-This repo uses genetic algorithms to create schedule according to next rules:
+This repo uses genetic and heuristic(CSP, MRV, LCV) algorithms to create schedule according to next rules:
 * Courses have lectures and practices
 * Restrictions to the rooms (lecture can't be in room with less than 15 seats)
 * Practice lessons could be taught by different teachers
