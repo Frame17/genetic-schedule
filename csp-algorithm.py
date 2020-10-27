@@ -24,7 +24,7 @@ def run_schedule(heuristics):
 
     disciplines = [generate_discipline() for _ in range(0, 10)]
     for i in range(0, len(disciplines)):
-        spot = heuristics(X, disciplines[:i], disciplines[i])
+        spot = heuristics(X, disciplines, i)
         disciplines[i].day = spot[0]
         disciplines[i].time = spot[1]
         disciplines[i].room = spot[2]
@@ -37,9 +37,56 @@ def on_spot(discipline, spot, disc):
            discipline.day == spot[0] and discipline.time == spot[1] and discipline.type != disc.type
 
 
-def mrv(X, disciplines, discipline):
-    return sorted(X, key=lambda spot: len(list(filter(lambda disc: on_spot(disc, spot, discipline), disciplines))))[0]
+def mrv(X, disciplines, i):
+    return \
+        sorted(X,
+               key=lambda spot: len(list(filter(lambda disc: on_spot(disc, spot, disciplines[i]), disciplines[:i]))))[0]
+
+
+# in our case, choosing a spot for a discipline, the discipline will be the one with the most constraints on other
+# disciplines
+def degree_evr(X, disciplines, discipline):
+    return mrv(X, disciplines, discipline)
+
+
+def conflicts(disc1, disc2):
+    return disc1.name == disc2.name and disc1.type == disc2.type or disc1.teacher == disc2.teacher
+
+
+def lcv(X, disciplines, i):
+    current_disc = disciplines[i]
+
+    def overlappings(x):
+        current_disc.day = x[0]
+        current_disc.time = x[1]
+        current_disc.room = x[2]
+        return len(list(filter(lambda disc: conflicts(current_disc, disc), disciplines[i:])))
+
+    least = (overlappings(X[0]), X[0])
+    for x in X:
+        olp = overlappings(x)
+        if olp < least[0]:
+            least = (olp, x)
+    return least[1]
+
+
+def forward_checking():
+    X = [(day, time, room) for day in list(map(lambda x: x, Day)) for time in list(map(lambda x: x, Time))
+         for room in ROOMS]
+
+    disciplines_spots = [(X.copy(), generate_discipline()) for _ in range(0, 10)]
+    for i in range(0, len(disciplines_spots)):
+        spot = random.choice(disciplines_spots[i][0])
+        disciplines_spots[i][1].day = spot[0]
+        disciplines_spots[i][1].time = spot[1]
+        disciplines_spots[i][1].room = spot[2]
+        for j in range(i + 1, len(disciplines_spots)):
+            if conflicts(disciplines_spots[i][1], disciplines_spots[j][1]):
+                disciplines_spots[j][0].remove(spot)
+
+    return Schedule(map(lambda ds: ds[1], disciplines_spots))
 
 
 if __name__ == '__main__':
     print(run_schedule(mrv))
+    # print(forward_checking())
